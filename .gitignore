@@ -1,0 +1,7 @@
+tests/
+document_errors/
+logs/
+private/
+public_html/
+public_shtml/
+node_modules/
