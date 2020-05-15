@@ -1,7 +1,7 @@
-module.exports = function (io) {
+module.exports = function (io, payload) {
 	const broadcast = io.of('/broadcast');
 	broadcast.on('connection', (socket) => {
-		console.log('Authentication passed!');
+		console.log(payload);
 		//socket.emit('ready', );
 		//socket.on('', function() {
 			
