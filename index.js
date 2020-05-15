@@ -6,22 +6,12 @@ const server = require('http').createServer(app);
 const io = require('socket.io')(server);
 const sioJwtAuth = require("socketio-jwt-auth");
 
-<<<<<<< HEAD
 io.use(sioJwtAuth.authenticate(require('./configs/jwt'), function(payload, done) {
 	if (payload) {
 		glob.sync('./listeners/*Listener.js').forEach(function(file) {
 			require(path.resolve(file))(io, payload, done);
 		});
 	}
-=======
-io.use(sioJwtAuth.authenticate({
-	secret: '52f4682f90d0c911209f99cc6de0d91c',
-	algorithm: 'HS256'
-}, function(payload, done) {
-	glob.sync('./listeners/*Listener.js').forEach(function(file) {
-		require(path.resolve(file))(io, payload, done);
-	});
->>>>>>> d9088f997761f196608592315c591fac4accdc6f
 	/*User.findOne({id: payload.sub}, function(err, user) {
 		if (err) {
 			return done(err);
