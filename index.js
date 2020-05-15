@@ -6,7 +6,7 @@ const server = require('http').createServer(app);
 const io = require('socket.io')(server);
 const sioJwtAuth = require("socketio-jwt-auth");
 
-io.use(jwtAuth.authenticate({
+io.use(sioJwtAuth.authenticate({
 	secret: '52f4682f90d0c911209f99cc6de0d91c',
 	algorithm: 'HS256'
 }, function(payload, done) {
