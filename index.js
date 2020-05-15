@@ -8,9 +8,7 @@ const sioJwtAuth = require("socketio-jwt-auth");
 
 io.use(sioJwtAuth.authenticate(require('./configs/jwt'), function(payload, done) {
 	if (payload) {
-		glob.sync('./listeners/*Listener.js').forEach(function(file) {
-			require(path.resolve(file))(io, payload, done);
-		});
+		return done();
 	}
 	/*User.findOne({id: payload.sub}, function(err, user) {
 		if (err) {
@@ -22,6 +20,9 @@ io.use(sioJwtAuth.authenticate(require('./configs/jwt'), function(payload, done)
 		return done(null, user);
 	});*/
 }));
+glob.sync('./listeners/*Listener.js').forEach(function(file) {
+	require(path.resolve(file))(io);
+});
 
 setInterval(function() {
 	var ready = false;
