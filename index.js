@@ -10,9 +10,13 @@ glob.sync('./listeners/*Listener.js').forEach(function(file) {
 });
 
 setInterval(function() {
+	var ready = false;
 	fs.access('./tmp/test.m3u8', fs.F_OK, (err) => {
-		if (!err) {
-			io.of('/broadcast').emit('ready');
+		var broadcast = io.of('/broadcast');
+		if (ready === false && !err) {
+			broadcast.emit('ready');
+		} else {
+			broadcast.emit('notReady');
 		}
 	});
 }, 5000);
