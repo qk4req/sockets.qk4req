@@ -8,8 +8,14 @@
   "author": "qk4req",
   "license": "ISC",
   "dependencies": {
+    "bufferutil": "^4.0.1",
     "express": "^4.17.1",
-    "socket.io": "^2.3.0"
+    "express-group-routes": "^1.1.0",
+    "glob": "^7.1.6",
+    "jsonwebtoken": "^8.5.1",
+    "socket.io": "^2.3.0",
+    "socketio-jwt-auth": "^0.1.0",
+    "utf-8-validate": "^5.0.2"
   },
   "directories": {
     "test": "tests"
