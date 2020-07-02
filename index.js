@@ -15,7 +15,7 @@ const S = Buffer.from(commander['secret'], 'base64');
 const T = commander['token'];
 
 var token;
-express.get('/', function(req, res) {
+app.get('/', function(req, res) {
 	if (req.query.code) {
 		let code = req.query.code;
 
