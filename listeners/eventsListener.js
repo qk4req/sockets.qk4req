@@ -5,9 +5,9 @@ module.exports = function (io, opts, args) {
 	/***
 	DONATIONALERTS
 	***/
-	let Centrifuge = require('centrifuge');
-	let websocket = require('ws');
-	let da = new Centrifuge('wss://centrifugo.donationalerts.com/connection/websocket', {
+	const Centrifuge = require('centrifuge');
+	const websocket = require('ws');
+	var da = new Centrifuge('wss://centrifugo.donationalerts.com/connection/websocket', {
 		websocket: websocket,
 		subscribeEndpoint: 'https://www.donationalerts.com/api/v1/centrifuge/subscribe',
 		subscribeHeaders: {
@@ -18,9 +18,9 @@ module.exports = function (io, opts, args) {
 	da.setToken(opts['user']['socket_connection_token']);
 	da.connect();
 	/***
-	STREAMLABS
+	TWITCH
 	***/
-	const sl = require('socket.io-client')('https://streamlabs.com', {
+	/*const sl = require('socket.io-client')('https://streamlabs.com', {
 		debug: true,
 		query: {
 			token: args['secret']
@@ -29,7 +29,7 @@ module.exports = function (io, opts, args) {
 		reconnection: true,
 		reconnectionDelayMax: 5000,
 		reconnectionDelay: 1000,
-	});
+	});*/
 	const events = io.of('/events');
 
 	db.query('SELECT * FROM notifications', function(e, notifications) {
@@ -108,7 +108,7 @@ module.exports = function (io, opts, args) {
 						});
 					});
 
-					sl.on('connect', function() {
+					/*sl.on('connect', function() {
 						console.log('Connected *!@#&*!#&!#*&@!to Streamlabs!');
 						sl.on('event', (data) => {
 							console.log(data);
@@ -160,7 +160,7 @@ module.exports = function (io, opts, args) {
 								}
 							}
 						});
-					});
+					});*/
 				}
 			});
 		}

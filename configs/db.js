@@ -1,3 +1,5 @@
+const bluebird = require('bluebird');
+
 class DB {
 	constructor () {
 		return({
@@ -6,10 +8,11 @@ class DB {
 					password: 'UHBIf1202*',
 					port: 3306,
 					database: 'qk4req',
-					waitForConnections: true,
-					connectionLimit: 10,
-					queueLimit: 0,
-					multipleStatements: true
+					Promise: bluebird
+					//waitForConnections: true,
+					//connectionLimit: 10,
+					//queueLimit: 0,
+					//multipleStatements: true
 			});
 	}
 }

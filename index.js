@@ -1,38 +1,37 @@
 const fs = require('fs');
 const path = require('path');
 const glob = require('glob');
-const commander = require('commander');
 const axios = require('axios');
 const app = require('express')();
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
-const sioJwtAuth = require("socketio-jwt-auth");
-commander.
-	option('-s, --secret <secret>', 'Extension secret').
-	option('-t, --token <token>', 'Socket token').
-	parse(process.argv);
-const S = Buffer.from(commander['secret'], 'base64');
-const T = commander['token'];
+const sioJwtAuth = require('socketio-jwt-auth');
 
-var token;
+const donationAlerts = require('./configs/donationAlerts');
+const twitch = require('./configs/twitch');
+
+var tokens = {
+	donationAlerts: null,
+	twitch: null
+};
 app.get('/', function(req, res) {
 	if (req.query.code) {
-		let code = req.query.code;
+		var code = req.query.code;
 
-		if (token === undefined && (!req.query.refresh || req.query.refresh == 'false' || req.query.refresh == '0')) {
+		if (tokens.donationAlerts === null && (!req.query.refresh || req.query.refresh === 'false' || req.query.refresh === '0')) {
 			axios({
-				method: 'post',
-				url: 'https://www.donationalerts.com/oauth/token',
+				url: donationAlerts.url,
+				method: donationAlerts.method,
 				data: {
-					'grant_type': 'authorization_code',
-					'client_id': '33',
-					'client_secret': 'sBqzxurEsE8WwYQg4ZR7fBCiUuUbneFOaQPWrnqi',
-					'redirect_uri': 'http://sockets.qk4req.ru/',
+					'grant_type': 'authorization_code', 
+					'client_id': donationAlerts.clientId,
+					'client_secret': donationAlerts.clientSecret,
+					'redirect_uri': donationAlerts.redirectUri,
 					'code': code
 				},
 			}).then(a => {
 				if (a.data) {
-					token = a.data;
+					tokens.donationAlerts = a.data;
 					run();
 					res.end();
 				}
@@ -42,19 +41,19 @@ app.get('/', function(req, res) {
 			});
 		} else {
 			axios({
-				method: 'post',
-				url: 'https://www.donationalerts.com/oauth/token',
+				url: donationAlerts.url,
+				method: donationAlerts.method,
 				data: {
 					'grant_type': 'refresh_token',
-					'client_id': '33',
-					'client_secret': 'sBqzxurEsE8WwYQg4ZR7fBCiUuUbneFOaQPWrnqi',
-					'redirect_uri': 'http://sockets.qk4req.ru/',
-					'refresh_token': token['refresh_token'],
+					'client_id': donationAlerts.clientId,
+					'client_secret': donationAlerts.clientSecret,
+					'redirect_uri': donationAlerts.redirectUri,
+					'refresh_token': tokens.donationAlerts.refresh_token,
 					'scope': 'oauth-user-show oauth-donation-subscribe'
 				},
 			}).then(r => {
 				if (r.data) {
-					token = r.data;
+					tokens.donationAlerts = r.data;
 					run();
 					res.end();
 				}
@@ -71,23 +70,23 @@ function run() {
 		method: 'get',
 		url: 'https://www.donationalerts.com/api/v1/user/oauth',
 		headers: {
-			'Authorization': `${token['token_type']} ${token['access_token']}`
+			'Authorization': `${tokens.donationAlerts.token_type} ${tokens.donationAlerts.access_token}`
 		},
 		validateStatus: function (status) {
-			return status >= 200 && status < 300; // default
+			return status >= 200 && status < 300;
 		},
 	})
 	.then(u => {
-		let user = u['data'];
-		if (user['data']) {
-			user = user['data'];
+		var user = u.data;
+		if (user.data) {
+			user = user.data;
 			/*io.use(sioJwtAuth.authenticate(require('./configs/jwt'), function(payload, done) {
 				if (payload) {
 					return done();
 				}
 			}));*/
 			glob.sync('./listeners/*Listener.js').forEach(function(file) {
-				require(path.resolve(file))(io, {user: user, token: token}, {secret:commander['secret'], token:commander['token']});
+				require(path.resolve(file))(io, {donationAlertsUser: user, tokens: tokens});
 			});
 		}
 	})
