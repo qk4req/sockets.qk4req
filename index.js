@@ -87,7 +87,7 @@ function run() {
 				}
 			}));*/
 			glob.sync('./listeners/*Listener.js').forEach(function(file) {
-				require(path.resolve(file))(io, {user: user, secret: S, token: T});
+				require(path.resolve(file))(io, {user: user, token: token}, {secret:commander['secret'], token:commander['token']});
 			});
 		}
 	})

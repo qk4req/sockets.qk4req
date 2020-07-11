@@ -1,11 +1,11 @@
 class DB {
 	constructor () {
 		return({
-					host: '80.87.195.164',
+					host: 'qk4req.ru',
 					user: 'admin',
-					password: 'UHBIf1202',
+					password: 'UHBIf1202*',
 					port: 3306,
-					database: 'app',
+					database: 'qk4req',
 					waitForConnections: true,
 					connectionLimit: 10,
 					queueLimit: 0,
