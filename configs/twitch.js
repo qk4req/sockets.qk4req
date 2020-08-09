@@ -1,11 +1,14 @@
 class Twitch {
 	constructor () {
 		return({
+					user: {
+						id: 419357906,
+						name: 'qk4req'
+					},
 					clientId: 'mhaz8pzuw6blpsfhv1sf9e2464ybno',
-					clientSecret: '63gtoyg5woqhw68wj635khlcrvvs1g',
+					clientSecret: 'gtk8xwbg9h147mfp6ohacg8kmp5qit',
 					redirectUri: 'http://sockets.qk4req.ru/twitch',
-					scope: ''
-					//code: 'token',
+					scope: 'user:read:email'
 			});
 	}
 }
