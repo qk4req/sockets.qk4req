@@ -8,7 +8,7 @@ const io = require('socket.io')(server);
 const sioJwtAuth = require('socketio-jwt-auth');
 
 function run () {
-	glob('./listeners/*Listener.js', function(e, matches) {
+	glob('./listeners/*Emitter.js', function(e, matches) {
 		matches.forEach(function(file) {
 			require(file)(io, express);
 			//require(path.resolve(file))(io, {donationAlertsUser: user, tokens: tokens});

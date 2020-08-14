@@ -8,10 +8,10 @@ class DB {
 					password: 'UHBIf1202*',
 					port: 3306,
 					database: 'qk4req',
-					Promise: bluebird
-					//waitForConnections: true,
-					//connectionLimit: 10,
-					//queueLimit: 0,
+					Promise: bluebird,
+					waitForConnections: true,
+					connectionLimit: 10,
+					queueLimit: 20,
 					//multipleStatements: true
 			});
 	}
