@@ -8,7 +8,7 @@ class Twitch {
 					clientId: 'mhaz8pzuw6blpsfhv1sf9e2464ybno',
 					clientSecret: 'gtk8xwbg9h147mfp6ohacg8kmp5qit',
 					redirectUri: 'http://sockets.qk4req.ru/twitch',
-					scope: 'user_read user:read:email'//
+					scope: 'user_read user:read:email channel_subscriptions'//
 			});
 	}
 }

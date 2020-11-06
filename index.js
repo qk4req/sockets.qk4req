@@ -6,9 +6,11 @@ const express = require('express')();
 const server = require('http').createServer(express);
 const io = require('socket.io')(server);
 const sioJwtAuth = require('socketio-jwt-auth');
+const moment = require('moment');
+
 
 function run () {
-	glob('./listeners/*Emitter.js', function(e, matches) {
+	glob('./controllers/*Controller.js', function(e, matches) {
 		matches.forEach(function(file) {
 			require(file)(io, express);
 			//require(path.resolve(file))(io, {donationAlertsUser: user, tokens: tokens});

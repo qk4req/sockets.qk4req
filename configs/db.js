@@ -3,9 +3,9 @@ const bluebird = require('bluebird');
 class DB {
 	constructor () {
 		return({
-					host: 'qk4req.ru',
-					user: 'admin',
-					password: 'UHBIf1202*',
+					host: 'localhost',
+					user: 'root',
+					password: 'root',
 					port: 3306,
 					database: 'qk4req',
 					Promise: bluebird,
