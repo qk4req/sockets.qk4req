@@ -5,10 +5,10 @@ class Twitch {
 						id: 419357906,
 						name: 'qk4req'
 					},
-					clientId: 'mhaz8pzuw6blpsfhv1sf9e2464ybno',
-					clientSecret: 'gtk8xwbg9h147mfp6ohacg8kmp5qit',
-					redirectUri: 'http://sockets.qk4req.ru/twitch',
-					scope: 'user_read user:read:email channel_subscriptions'//
+					clientId: '3bo1guz83rc34u9no0677kt4k11ue1',
+					clientSecret: '6sf2i9b65f7fy77e1ftgjrcdkydsrh',
+					redirectUri: 'http://localhost:3000/twitch',
+					scope: 'user_read user:read:email channel_subscriptions chat:read chat:edit'//
 			});
 	}
 }

@@ -1,3 +1,3 @@
 module.exports = async function (io, express) {
-	const notifications = io.of('/dubbings');
+	const dubbings = io.of('/dubbings');
 }

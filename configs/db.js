@@ -11,7 +11,7 @@ class DB {
 					Promise: bluebird,
 					waitForConnections: true,
 					connectionLimit: 10,
-					queueLimit: 20,
+					queueLimit: 50,
 					//multipleStatements: true
 			});
 	}
