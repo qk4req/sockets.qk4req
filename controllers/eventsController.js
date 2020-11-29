@@ -138,15 +138,18 @@ module.exports = async function (io, express) {
 				case '=>':
 				case '>=':
 					if (amount >= egg.value) alignment = egg;
-				break;
+					break;
+
 				case '<=':
 				case '=<':
 					if (amount <= egg.value) alignment = egg;
-				break;
+					break;
+
 				case '===':
 				case '==':
+
 					if (amount == egg.value || amount === egg.value) alignment = egg;
-				break;
+					break;
 			}
 		});
 		return (typeof alignment !== 'undefined') ? alignment : null;
@@ -298,7 +301,7 @@ module.exports = async function (io, express) {
 				volume: notification.volume
 			};
 		});
-		db.query('SELECT * FROM easter_eggs')
+		db.query('SELECT * FROM easter_eggs AS ee ORDER BY ee.expression, ee.value ASC')
 		.then(([rows,fields]) => {
 			rows.forEach(function(egg) {
 				easterEggs.push(egg);
