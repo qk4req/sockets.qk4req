@@ -1,4 +1,4 @@
-module.exports = async function (io, express) {
+module.exports = async function (io, express, logger) {
 	const Twitch = require('twitch');
 	const {RefreshableAuthProvider, StaticAuthProvider} = Twitch;
 	const TwitchWebhooks = require('twitch-webhooks');
@@ -6,6 +6,7 @@ module.exports = async function (io, express) {
 	const PubSubClient = require('twitch-pubsub-client');
 	const TwitchStrategy = require('@d-fischer/passport-twitch').Strategy;
 	const DonationAlertsStrategy = require('../libraries/passport-da');
+	
 	const axios = require('axios');
 	const passport = require('passport');
 	const moment = require('moment');

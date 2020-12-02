@@ -1,3 +1,35 @@
+const winston = require('winston');
+const logger = winston.createLogger({
+	level: winston.config.syslog.levels,
+	format: winston.format.json(),
+	transports: [
+		new winston.transports.Console(),
+		new winston.transports.File({
+			filename: 'logs/error.log',
+			level: 'error'
+		}),
+		new winston.transports.File({
+			filename: 'logs/warn.log',
+			level: 'warn'
+		}),
+		new winston.transports.File({
+			filename: 'logs/info.log',
+			level: 'info'
+		}),
+		new winston.transports.File({
+			filename: 'logs/combo.log'
+		})
+	],
+	exceptionHandlers: [
+		new winston.transports.Console(),
+		new winston.transports.File({filename: 'logs/exceptions.log'})
+	],
+	rejectionHandlers: [
+		new winston.transports.Console(),
+		new winston.transports.File({filename: 'rejections.log'})
+	],
+	exitOnError: false
+});
 const fs = require('fs');
 const path = require('path');
 const glob = require('glob');
@@ -12,33 +44,12 @@ const moment = require('moment');
 function run () {
 	glob('./controllers/*Controller.js', function(e, matches) {
 		matches.forEach(function(file) {
-			require(file)(io, express);
-			//require(path.resolve(file))(io, {donationAlertsUser: user, tokens: tokens});
+			require(file)(io, express, logger);
 		});
-	});
-	//if (users.donationAlerts !== null && users.twitch !== null) {
-		/*io.use(sioJwtAuth.authenticate(require('./configs/jwt'), function(payload, done) {
-			if (payload) {
-				return done();
-			}
-		}));*/
-	//}			
+	});		
 }
 
 run();
-
-
-/*setInterval(function() {
-	var ready = false;
-	fs.access('./tmp/test.m3u8', fs.F_OK, (err) => {
-		var broadcast = io.of('/broadcast');
-		if (ready === false && !err) {
-			broadcast.emit('ready');
-		} else {
-			broadcast.emit('notReady');
-		}
-	});
-}, 5000);*/
 
 server.listen(3000, function() {
 	console.log('Listen 3000 port!');
