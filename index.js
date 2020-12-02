@@ -26,7 +26,7 @@ const logger = winston.createLogger({
 	],
 	rejectionHandlers: [
 		new winston.transports.Console(),
-		new winston.transports.File({filename: 'rejections.log'})
+		new winston.transports.File({filename: 'logs/rejections.log'})
 	],
 	exitOnError: false
 });
