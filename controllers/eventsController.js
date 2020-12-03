@@ -1,9 +1,7 @@
 module.exports = async function (io, express, logger) {
-	const Twitch = require('twitch');
-	const {RefreshableAuthProvider, StaticAuthProvider} = Twitch;
-	const TwitchWebhooks = require('twitch-webhooks');
-	const {SimpleAdapter} = TwitchWebhooks;
-	const PubSubClient = require('twitch-pubsub-client');
+	const {ApiClient, RefreshableAuthProvider, StaticAuthProvider} = require('twitch');
+	const {SimpleAdapter, WebHookListener} = require('twitch-webhooks');
+	const {PubSubClient} = require('twitch-pubsub-client');
 	const TwitchStrategy = require('@d-fischer/passport-twitch').Strategy;
 	const DonationAlertsStrategy = require('../libraries/passport-da');
 	
@@ -13,6 +11,7 @@ module.exports = async function (io, express, logger) {
 	const ws = require('ws');
 	const Centrifuge = require('centrifuge');
 	const db = require('../libraries/db');
+
 	const twitch = require('../configs/twitch');
 	const streamLabs = require('../configs/streamlabs');
 	const donationAlerts = require('../configs/donationAlerts');
@@ -89,12 +88,9 @@ module.exports = async function (io, express, logger) {
 					});
 					var e = donations.concat(followers, subscriptions);
 					socket.emit('inited', {success: true, payload: e});
-				})
-				.catch(console.log);
-			})
-			.catch(console.log);
-		})
-		.catch(console.log);
+				});
+			});
+		});
 
 		socket.on('update', (type, data, id = undefined) => {
 			var t = (type === 'easter_egg') ? 'donation' : type;
@@ -125,8 +121,7 @@ module.exports = async function (io, express, logger) {
 							}
 						]
 					});
-				})
-				.catch(console.log);
+				});
 			}
 		});
 	});
@@ -308,7 +303,7 @@ module.exports = async function (io, express, logger) {
 				easterEggs.push(egg);
 			});
 
-			/*passport.use(new TwitchStrategy({
+			passport.use(new TwitchStrategy({
 					clientID: twitch.clientId,
 					clientSecret: twitch.clientSecret,
 					callbackURL: twitch.redirectUri,
@@ -323,9 +318,9 @@ module.exports = async function (io, express, logger) {
 							refreshToken: refreshToken,
 						}
 					);
-					const apiClient = new Twitch({authProvider});
+					const apiClient = new ApiClient({authProvider});
 
-					const followerListener = new TwitchWebhooks(apiClient, new SimpleAdapter({
+					const followerListener = new WebHookListener(apiClient, new SimpleAdapter({
 						hostName: 'localhost',
 						listenerPort: 88
 					}));
@@ -360,7 +355,7 @@ module.exports = async function (io, express, logger) {
 						.catch(console.log);
 					});
 				}
-			));*/
+			));
 			passport.use(new DonationAlertsStrategy({
 					clientID: donationAlerts.clientId,
 					clientSecret: donationAlerts.clientSecret,
@@ -393,7 +388,6 @@ module.exports = async function (io, express, logger) {
 									donation.id = rows.insertId;
 									await events.emit('created', donation.toObject());
 								})
-								.catch(console.log);
 							}
 						});
 					});	
@@ -429,8 +423,7 @@ module.exports = async function (io, express, logger) {
 							.then(async ([rows, fields]) => {
 								donation.id = rows.insertId;
 								await events.emit('created', donation.toObject());
-							})
-							.catch(console.log);
+							});
 						}
 						if (alert.for === 'twitch_account') {
 							switch (alert.type) {
@@ -443,8 +436,7 @@ module.exports = async function (io, express, logger) {
 									.then(async ([rows, fields]) => {
 										follower.id = rows.insertId;
 										await events.emit('created', follower.toObject());
-									})
-									.catch(console.log);
+									});
 								break;
 								/*case 'subscription':
 								case 'resub':
@@ -469,8 +461,6 @@ module.exports = async function (io, express, logger) {
 					}
 				});
 			});
-		})
-		.catch(console.log)
-	})
-	.catch(console.log);
+		});
+	});
 }
