@@ -1,6 +1,7 @@
 module.exports = async function (io, express, logger) {
 	const {ApiClient, RefreshableAuthProvider, StaticAuthProvider} = require('twitch');
 	const {SimpleAdapter, WebHookListener} = require('twitch-webhooks');
+	const {NgrokAdapter} = require('twitch-webhooks-ngrok');
 	const {PubSubClient} = require('twitch-pubsub-client');
 	const TwitchStrategy = require('@d-fischer/passport-twitch').Strategy;
 	const DonationAlertsStrategy = require('../libraries/passport-da');
@@ -106,7 +107,7 @@ module.exports = async function (io, express, logger) {
 					});
 				}
 				var a = t.charAt(0);
-				console.log(`UPDATE ${t}s AS ${a} SET ${s} WHERE ${a}.id = ${id};`);
+				//console.log(`UPDATE ${t}s AS ${a} SET ${s} WHERE ${a}.id = ${id};`);
 				db.execute(`UPDATE ${t}s AS ${a} SET ${s} WHERE ${a}.id = ${id};`)
 				.then(() => {
 					events.emit('updated', {
@@ -255,12 +256,12 @@ module.exports = async function (io, express, logger) {
 			this.notification = notifications.follower;
 		},
 		fromTwitch: function(data) {
-			/*if (!data.name || typeof data.name !== 'string' || data.name.length === 0) throw Error;
-			this.name = data.name;
-			this.created_at = moment().utc();
-			this.platform = 'streamlabs';
-			this.notification = notifications.follower;*/
-			console.log(data);
+			if (!data.userDisplayName || typeof data.userDisplayName !== 'string' || data.userDisplayName.length === 0) throw Error;
+			if (!data.followDate || typeof data.followDate !== 'object' || !(data.followDate instanceof Date)) throw Error;
+			this.name = data.userDisplayName;
+			this.created_at = moment(data.followDate).utc();
+			this.platform = 'twitch';
+			this.notification = notifications.follower;
 		},
 		toObject: function() {
 			message = {
@@ -294,7 +295,7 @@ module.exports = async function (io, express, logger) {
 			notifications[notification.type] = {
 				id: notification.id,
 				src: notification.src,
-				volume: notification.volume
+				//volume: notification.volume
 			};
 		});
 		db.query('SELECT * FROM easter_eggs AS ee ORDER BY ee.expression, ee.value ASC')
@@ -320,25 +321,27 @@ module.exports = async function (io, express, logger) {
 					);
 					const apiClient = new ApiClient({authProvider});
 
-					const followerListener = new WebHookListener(apiClient, new SimpleAdapter({
-						hostName: 'localhost',
-						listenerPort: 88
-					}));
+					const followerListener = new WebHookListener(apiClient, new NgrokAdapter(), { hookValidity: 60 });
 					await followerListener.subscribeToFollowsToUser(twitch.user.id, async (alert) => {
+						console.log(alert);
 						follower.fromTwitch(alert);
-						db.execute(
-							'INSERT INTO followers(notification_id, name, created_at, platform) VALUES(?, ?, ?, ?)',
-							follower.toArray(),
-						)
-						.then(async ([rows, fields]) => {
-							follower.id = rows.insertId;
-							await events.emit('created', follower.toObject());
-						})
-						.catch(console.log);
+						db.execute('SELECT EXISTS(SELECT 1 FROM followers AS f WHERE f.`name` = ?)', [follower.name])
+						.then(([rows,fields]) => {
+							if (rows[0][Object.keys(rows[0])[0]] == 0) {
+								db.execute(
+									'INSERT INTO followers(notification_id, name, created_at, platform) VALUES(?, ?, ?, ?)',
+									follower.toArray(),
+								)
+								.then(async ([rows, fields]) => {
+									follower.id = rows.insertId;
+									await events.emit('created', follower.toObject());
+								});
+							}
+						});
 					});
-					followerListener.listen();
+					await followerListener.listen();
 
-					const pubSubClient = new PubSubClient();
+					/*const pubSubClient = new PubSubClient();
 					await pubSubClient.registerUserListener(apiClient);
 					const subscriptionListener = await pubSubClient.onSubscription(twitch.user.id, (subscription) => {
 						subscription.notification = {
@@ -351,9 +354,8 @@ module.exports = async function (io, express, logger) {
 						)
 						.then(async () => {
 							await events.emit('created', {success: true, payload: [subscription]});
-						})
-						.catch(console.log);
-					});
+						});
+					});*/
 				}
 			));
 			passport.use(new DonationAlertsStrategy({
@@ -429,13 +431,18 @@ module.exports = async function (io, express, logger) {
 							switch (alert.type) {
 								case 'follow':
 									follower.fromStreamLabs(alert.message[0]);
-									db.execute(
-										'INSERT INTO followers(notification_id, name, created_at, platform) VALUES(?, ?, ?, ?)',
-										follower.toArray()
-									)
-									.then(async ([rows, fields]) => {
-										follower.id = rows.insertId;
-										await events.emit('created', follower.toObject());
+									db.execute('SELECT EXISTS(SELECT 1 FROM followers AS f WHERE f.`name` = ?)', [follower.name])
+									.then(([rows,fields]) => {
+										if (rows[0][Object.keys(rows[0])[0]] == 0) {
+											db.execute(
+												'INSERT INTO followers(notification_id, name, created_at, platform) VALUES(?, ?, ?, ?)',
+												follower.toArray()
+											)
+											.then(async ([rows, fields]) => {
+												follower.id = rows.insertId;
+												await events.emit('created', follower.toObject());
+											});
+										}
 									});
 								break;
 								/*case 'subscription':

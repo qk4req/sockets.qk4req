@@ -7,7 +7,7 @@ class Twitch {
 					},
 					clientId: '3bo1guz83rc34u9no0677kt4k11ue1',
 					clientSecret: '6sf2i9b65f7fy77e1ftgjrcdkydsrh',
-					redirectUri: 'http://localhost:6699/twitch',
+					redirectUri: 'http://localhost:3000/twitch',
 					scope: 'user_read channel_read channel_editor channel_subscriptions user:read:email user:edit:broadcast channel:read:subscriptions channel:manage:broadcast chat:read chat:edit'//
 			});
 	}

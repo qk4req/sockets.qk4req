@@ -4,5 +4,6 @@ logs/
 private/
 public_html/
 public_shtml/
-node_modules/
 ftpsync.settings
+/node_modules/*
+!/node_modules/centrifuge/dist/centrifuge.js
