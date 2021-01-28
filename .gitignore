@@ -1,9 +1,4 @@
-tests/
-document_errors/
-logs/
-private/
-public_html/
-public_shtml/
+/logs/
 ftpsync.settings
 /node_modules/*
 !/node_modules/centrifuge/dist/centrifuge.js

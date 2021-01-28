@@ -56,10 +56,10 @@ module.exports = async function (io, express, logger) {
 								src: d.notification_src
 							};
 						}
-						delete d.notification_id;
+						//delete d.notification_id;
 						delete d.notification_type
 						delete d.notification_src;
-						delete d.easter_egg_id;
+						//delete d.easter_egg_id;
 						delete d.easter_egg_src;
 						delete d.easter_egg_expression;
 						delete d.easter_egg_value;
@@ -71,7 +71,7 @@ module.exports = async function (io, express, logger) {
 							type: f.notification_type,
 							src: f.notification_src
 						};
-						delete f.notification_id;
+						//delete f.notification_id;
 						delete f.notification_type
 						delete f.notification_src;
 						return f;
@@ -82,7 +82,7 @@ module.exports = async function (io, express, logger) {
 							type: s.notification_type,
 							src: s.notification_src
 						};
-						delete s.notification_id;
+						//delete s.notification_id;
 						delete s.notification_type
 						delete s.notification_src;
 						return s;
@@ -290,7 +290,7 @@ module.exports = async function (io, express, logger) {
 
 	
 	db.query('SELECT * FROM notifications')
-	.then(([rows,fields]) => {
+	.then(([rows, fields]) => {
 		rows.forEach(function(notification) {
 			notifications[notification.type] = {
 				id: notification.id,
@@ -299,7 +299,7 @@ module.exports = async function (io, express, logger) {
 			};
 		});
 		db.query('SELECT * FROM easter_eggs AS ee ORDER BY ee.expression, ee.value ASC')
-		.then(([rows,fields]) => {
+		.then(([rows, fields]) => {
 			rows.forEach(function(egg) {
 				easterEggs.push(egg);
 			});
@@ -322,11 +322,11 @@ module.exports = async function (io, express, logger) {
 					const apiClient = new ApiClient({authProvider});
 
 					const followerListener = new WebHookListener(apiClient, new NgrokAdapter(), { hookValidity: 60 });
-					await followerListener.subscribeToFollowsToUser(twitch.user.id, async (alert) => {
+					followerListener.subscribeToFollowsToUser(twitch.user.id, async (alert) => {
 						console.log(alert);
 						follower.fromTwitch(alert);
 						db.execute('SELECT EXISTS(SELECT 1 FROM followers AS f WHERE f.`name` = ?)', [follower.name])
-						.then(([rows,fields]) => {
+						.then(([rows, fields]) => {
 							if (rows[0][Object.keys(rows[0])[0]] == 0) {
 								db.execute(
 									'INSERT INTO followers(notification_id, name, created_at, platform) VALUES(?, ?, ?, ?)',
@@ -432,7 +432,7 @@ module.exports = async function (io, express, logger) {
 								case 'follow':
 									follower.fromStreamLabs(alert.message[0]);
 									db.execute('SELECT EXISTS(SELECT 1 FROM followers AS f WHERE f.`name` = ?)', [follower.name])
-									.then(([rows,fields]) => {
+									.then(([rows, fields]) => {
 										if (rows[0][Object.keys(rows[0])[0]] == 0) {
 											db.execute(
 												'INSERT INTO followers(notification_id, name, created_at, platform) VALUES(?, ?, ?, ?)',
